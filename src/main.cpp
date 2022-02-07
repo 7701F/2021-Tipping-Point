@@ -6,32 +6,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-#include "main.h"
+#include <sstream>
 
+#include "main.h"
+#include "opcontrol.h"
 #include "opfunctions.h"
 
 // Controller Auton Indicator
-int scrcount = 1;
-bool ctrlScrBool = false;
-void ctrlrScr() {
-	std::string selAuton = arms::selector::b[abs(arms::selector::auton)];
-
-	if (!(scrcount % 25)) {
-		// Only print every 50ms, the controller text update rate is slow
-		if (ctrlScrBool == true) {
-			master.print(1, 0, "Auton: %s", selAuton.c_str());
-			printf("auton log");
-			ctrlScrBool = !ctrlScrBool;
-		} else {
-			master.print(1, 0, "Brake: %s", (pbrake ? "ON" : "OFF"));
-			printf("brake log");
-			ctrlScrBool = !ctrlScrBool;
-		}
-	}
-
-	scrcount++;
-	pros::delay(200);
-}
+std::string selAuton;
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -43,15 +25,49 @@ void initialize() {
 	// ARMS & Controller init and reset IMU sensor
 	arms::chassis::init();
 	arms::pid::init();
-	imu_sensor.reset();
-	pros::Task controllerTask{ctrlrScr, "Controller Display"};
+
+	pros::Task controllerTask{[=] {
+		master.clear();
+
+		while (true) {
+			// Only print every 50ms, the controller text update rate is slow
+			selAuton = arms::selector::b[abs(arms::selector::auton)];
+
+			std::stringstream autonstr;
+			autonstr << "Auton: " << arms::selector::auton << "\r";
+			std::stringstream brakestr;
+			brakestr << "Brake: " << (pbrake ? "ON" : "OFF") << "\r";
+
+			master.print(0, 0, autonstr.str().c_str());
+			pros::delay(50);
+			master.print(1, 0, brakestr.str().c_str());
+			pros::delay(50);
+			if (pros::competition::is_connected()) {
+				master.print(2, 0, "Match Timer: %d\r", matchTimerCount);
+			} else {
+				// master.print(2, 0, "Task Count: %d\r", pros::Task::get_count());
+				master.print(2, 0, "Gyro: %f\r", imu_sensor.get_heading());
+			}
+
+			pros::delay(50);
+		}
+	}};
+
+	// Task counter Task
+	// pros::Task taskTask{[=] {
+	// 	// while (true) {
+	// 	// 	printf("Task Count: %d\n", pros::Task::get_count());
+	// 	// 	pros::delay(2000);
+	// 	// }
+	// }};
 
 	// Set display
-	if (!pros::competition::is_connected()) display();
+	// if (!pros::competition::is_connected()) display();
+	arms::selector::init();
 
 	// Set brakes on to active bold
-	rightLift.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	leftLift.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	// E_MOTOR_BRAKE_BRAKE
+	liftMotors.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);
 	clawM.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	winchM.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 }
@@ -62,8 +78,18 @@ void initialize() {
  * the robot is enabled, this task will exit.
  */
 void disabled() {
-	arms::selector::init();
-	printf("Disabled");
+	static int count = 1;
+	printf("Disabled called %d\n", count++);
+
+	// kill any tasks we may have started and do not need now
+	// killTask();
+
+	// disabled is actually a task as well
+	// we can either return or block here doing something useful
+	// the task will be deleted when driver or auton starts
+	while (true) {
+		pros::delay(1000);
+	}
 }
 
 /**
@@ -75,4 +101,10 @@ void disabled() {
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() {
+	static int count = 1;
+	printf("Comp Init called %d\n", count++);
+
+	// if cable is removed and then attached we may need to
+	killTask();
+}

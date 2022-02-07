@@ -13,13 +13,16 @@
 // Declare controller
 extern pros::Controller master;
 
-// Declare motors
+// Declare drive motors
 extern pros::Motor leftMtr;
 extern pros::Motor rightMtr;
 extern pros::Motor leftMtrR;
 extern pros::Motor rightMtrR;
-extern pros::Motor rightLift;
-extern pros::Motor leftLift;
+
+// Declare lift motors
+extern okapi::MotorGroup liftMotors;
+
+// Declare grabby motors
 extern pros::Motor clawM;
 extern pros::Motor winchM;
 
