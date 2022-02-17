@@ -8,37 +8,6 @@
  */
 #include "main.h"
 
-#include "opcontrol.h"
-#include "opfunctions.h"
-
-pros::task_t matchTimerTask = (pros::task_t)NULL;
-
-// Match Timer Indicator
-int matchTimerCount = 105;
-void matchTimer() {
-	printf("Match Timer: %d\n", matchTimerCount);
-	pros::delay(1000);
-
-	while (matchTimerCount > 0) {
-		printf("Match Timer: %d\n", matchTimerCount);
-
-		if (matchTimerCount == 1) { // End of match
-			master.rumble("----");
-			matchTimerCount = 105;
-			killTask();
-		} else if (matchTimerCount == 35) { // 75 seconds into Driver Control
-			master.rumble(".-.-.");
-		} else if (matchTimerCount == 60) { // 60 seconds into Driver Control
-			master.rumble(". .");
-		} else if (matchTimerCount == 75) { // 45 seconds into Driver Control
-			master.rumble("-");
-		}
-
-		matchTimerCount--;
-		pros::delay(1000);
-	}
-}
-
 /*
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -53,40 +22,44 @@ void matchTimer() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	if (pros::competition::is_connected()) {
-		// matchTimerCount = 105;
-		matchTimerTask = pros::Task(matchTimer);
-	}
-
-	// Initialize the lift motors
-	// liftMotors.moveVelocity(-100);
-	// pros::delay(200);
 	liftMotors.moveRelative(30, 100);
-	pros::delay(56);
+	arms::lift::waitUntilSettled();
 	liftMotors.tarePosition();
+	liftMotors.moveRelative(30, 100);
 
 	// Run Loop
 	while (true) {
-		// Steering
-		arms::chassis::arcade(
-			master.get_analog(ANALOG_LEFT_Y) * (double)100 / 127,
-		    master.get_analog(ANALOG_RIGHT_X) * (double)100 / 127
+		// clang-format off
+		/* Steering
+		 * Handled by ARMS logic that has deadzones
+		 */
+		arms::chassis::arcade (
+			master.get_analog (ANALOG_LEFT_Y) * (double)100 / 127,
+		    master.get_analog (ANALOG_RIGHT_X) * (double)100 / 127
 		);
+		// clang-format on
 
+		/* Autonomous Manual Trigger
+		 * If the robot is not connected to competition control
+		 * and the button is pressed, the robot will the autonomous
+		 * routine to allow for easy testing.
+		 */
+		if (master.get_digital_new_press(DIGITAL_X) && !pros::competition::is_connected())
+			autonomous();
 
-		// Game Controls
+		/* Lift, Claw, and Winch Controls
+		 * Controls for game specific functions
+		 */
 		gameSystemControls();
 
-		// Brake System
-		// Uses basic logic for toggle button
-		if (master.get_digital_new_press(DIGITAL_A) == 1) {
+		/* Brake System
+		 * The brake system is a safety feature that prevents the robot from being
+		 * pushed by other robots. Uses basic logic for toggle button
+		 */
+		if (master.get_digital_new_press(DIGITAL_B) == 1) {
 			pbrake = !pbrake;
 		}
 		motorBrake(pbrake);
-
-		if (master.get_digital_new_press(DIGITAL_X) &&
-		    !pros::competition::is_connected())
-			autonomous();
 
 		// Lastly, delay
 		pros::delay(2);

@@ -18,17 +18,31 @@ pros::Motor rightMtr(11, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
 pros::Motor rightMtrR(12, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
 
 // Lift Motors
-// pros::Motor rightLift(8, MOTOR_GEARSET_36, true, MOTOR_ENCODER_DEGREES);
-// pros::Motor leftLift(9, MOTOR_GEARSET_36, false, MOTOR_ENCODER_DEGREES);
-okapi::Motor rightLift(8, true, okapi::AbstractMotor::gearset::red, okapi::AbstractMotor::encoderUnits::degrees);
-okapi::Motor leftLift(9, false, okapi::AbstractMotor::gearset::red, okapi::AbstractMotor::encoderUnits::degrees);
+okapi::Motor rightLift(8, true, okapi::AbstractMotor::gearset::red,
+                       okapi::AbstractMotor::encoderUnits::degrees);
+okapi::Motor leftLift(9, false, okapi::AbstractMotor::gearset::red,
+                      okapi::AbstractMotor::encoderUnits::degrees);
 okapi::MotorGroup liftMotors({rightLift, leftLift});
 
-// Claw Motor
-pros::Motor clawM(6, MOTOR_GEARSET_36, false, MOTOR_ENCODER_DEGREES);
+// Ring Motor
+okapi::Motor ringM(6, true, okapi::AbstractMotor::gearset::blue, okapi::AbstractMotor::encoderUnits::degrees);
 
 // Winch Motor
 pros::Motor winchM(15, MOTOR_GEARSET_36, false, MOTOR_ENCODER_DEGREES);
 
-// Inertial Sensor
+// Sensors
 pros::Imu imu_sensor(1);
+pros::Distance distanceR(21);
+
+// Vision
+pros::vision_signature_s_t RED_SIG =
+    pros::Vision::signature_from_utility(1, 6255, 7309, 6782, -325, 223, -52, 3.000, 0);
+pros::vision_signature_s_t YLW_SIG =
+    pros::Vision::signature_from_utility(2, 351, 1099, 724, -3479, -2631, -3054, 3.000, 0);
+pros::vision_signature_s_t BLU_SIG =
+    pros::Vision::signature_from_utility(3, -3073, -2047, -2560, 7899, 12545, 10222, 3.000, 0);
+pros::Vision vision_sensor(10, pros::E_VISION_ZERO_CENTER);
+
+// Pneumatics
+pros::ADIDigitalOut clawP('A');
+pros::ADIDigitalOut AWP('B');
