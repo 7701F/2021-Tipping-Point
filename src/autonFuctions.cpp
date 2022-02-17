@@ -6,6 +6,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+#include "ARMS/chassis.h"
 #include "main.h"
 
 int settle_count;
@@ -61,33 +62,81 @@ void resetLift() {
 }
 } // namespace arms::lift
 
-int csettle_count;
-int csettle_time;
-double csettle_threshold_linear;
-double csettle_threshold_angular;
-
 // AUTO CLAW FUNCTIONS
 bool clawState = false;
 namespace arms::claw {
 
 void toggleClaw() {
+
 	if (clawState == false) {
+		// If the claw is open, close it
 		clawP.set_value(true);
 		clawState = true;
 	} else {
+		// If the claw is closed, op it
 		clawP.set_value(false);
 		clawState = false;
 	}
 }
 
 void puncher() {
+	// Punch out rings
 	AWP.set_value(true);
 	pros::delay(1000);
+	// Retract the puncher
 	AWP.set_value(false);
 }
 } // namespace arms::claw
 
-// pros::vision_signature_s_t RED_SIG = pros::Vision::signature_from_utility(
-//     1, 8973, 11143, 10058, -2119, -1053, -1586, 5.4, 0);
+// Signitures
+pros::vision_signature_s_t RED_SIG =
+    pros::Vision::signature_from_utility(1, 6255, 7309, 6782, -325, 223, -52, 3.000, 0);
+pros::vision_signature_s_t YLW_SIG =
+    pros::Vision::signature_from_utility(2, 351, 1099, 724, -3479, -2631, -3054, 3.000, 0);
+pros::vision_signature_s_t BLU_SIG =
+    pros::Vision::signature_from_utility(3, -3073, -2047, -2560, 7899, 12545, 10222, 3.000, 0);
 
-namespace vision {} // namespace vision
+bool initialized = false;
+namespace vision {
+void init() {
+	vision_sensor.set_signature(1, &BLU_SIG);
+	vision_sensor.set_signature(2, &RED_SIG);
+	vision_sensor.set_signature(3, &YLW_SIG);
+
+	// pros::vision_color_code_t redGoal = vision_sensor.create_color_code(1, 4);
+	// pros::vision_color_code_t blueGoal = vision_sensor.create_color_code(1,);
+	initialized = true;
+}
+
+int alignRobot(int color) {
+	// Align the robot to the goal
+	// color = 1 for blue, 2 for red, 3 for yellow
+	// return 1 if the robot is aligned, 2 if it is not aligned
+
+	if (initialized == false) {
+		init();
+	}
+	bool aligned = false;
+	vision_sensor.clear_led();
+
+	// Get the position of the goal
+	pros::vision_object_s_t goal = vision_sensor.get_by_sig(color, 0);
+	printf("%d", goal.x_middle_coord);
+	vision_sensor.set_led(34);
+	while(!aligned) {
+		printf("%d", goal.x_middle_coord);
+		if(!aligned) {
+			arms::chassis::turn(1, 100);
+		} else if(goal.x_middle_coord < 0) {
+			arms::chassis::turn(-1, 100);
+		}
+		if(goal.x_middle_coord == 0) {
+			aligned = true;
+		}
+	}
+
+	if(aligned == true) {
+		return 1;
+	} else return 0;
+}
+} // namespace vision

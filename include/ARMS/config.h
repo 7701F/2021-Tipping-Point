@@ -24,7 +24,7 @@ namespace arms {
 #define SLEW_STEP 8 // smaller number = more slew
 
 // sensors
-#define IMU_PORT 1            // port 0 for disabled
+#define IMU_PORT 21            // port 0 for disabled
 #define ENCODER_PORTS 0, 0, 0 // port 0 for disabled,
 #define EXPANDER_PORT 0       // port 0 for disabled
 

@@ -17,7 +17,7 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	// ARMS & Controller init and reset IMU sensor
+	// ARMS & Controller init
 	arms::init();
 
 	// Controller Status Display

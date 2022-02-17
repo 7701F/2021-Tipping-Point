@@ -35,9 +35,6 @@ extern pros::Distance distanceR;
 
 // Vision Sensor
 extern pros::Vision vision_sensor;
-extern pros::vision_signature_s_t RED_SIG;
-extern pros::vision_signature_s_t BLU_SIG;
-extern pros::vision_signature_s_t YLW_SIG;
 
 // Pneumatics
 extern pros::ADIDigitalOut clawP;
