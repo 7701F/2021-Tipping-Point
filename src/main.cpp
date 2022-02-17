@@ -18,17 +18,15 @@
  */
 void initialize() {
 	// ARMS & Controller init and reset IMU sensor
-	arms::chassis::init();
+	arms::init();
 
 	// Controller Status Display
 	pros::Task controllerTask{[=] {
 		master.clear();
 
-		std::string selAuton;
 		while (true) {
 			// Only print every 50ms, the controller text update rate
 			// is slow
-			selAuton = arms::selector::b[abs(arms::selector::auton)];
 
 			std::stringstream autonstr;
 			autonstr << "Auton: " << arms::selector::auton << "\r";
@@ -46,9 +44,6 @@ void initialize() {
 			pros::delay(200);
 		}
 	}};
-
-	// ARMS Auton Selector
-	arms::selector::init();
 
 	// Set brakes on to active bold
 	liftMotors.setBrakeMode(okapi::AbstractMotor::brakeMode::hold);

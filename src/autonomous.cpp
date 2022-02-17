@@ -6,6 +6,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+#include "ARMS/arc.h"
 #include "main.h"
 
 std::int32_t mmToInch() {
@@ -91,7 +92,7 @@ void Rauton() {
 	arms::claw::toggleClaw();
 	liftMotors.moveRelative(30, 100);
 	pros::delay(300);
-	arms::chassis::turnAsync(-60, 80);
+	arms::chassis::turn(-60, 80);
 	arms::chassis::move(-20, 80);
 	arms::claw::toggleClaw();
 	pros::delay(30);
@@ -115,9 +116,10 @@ void Lauton() {
 	arms::chassis::move(-15, 80);
 	pros::delay(500);
 	arms::chassis::move(-6, 80);
-	arms::chassis::turn(-80, 60);
-	arms::chassis::move(60, 100);
-	arms::chassis::moveAsync(5, 75);
+	// arms::chassis::turn(-80, 60);
+	// arms::chassis::move(60, 100);
+	arms::chassis::arcRight(int length, double rad)
+	arms::chassis::move(5, 75);
 	arms::claw::toggleClaw();
 	pros::delay(300);
 	liftMotors.moveRelative(30, 75);
@@ -125,7 +127,7 @@ void Lauton() {
 	arms::chassis::move(-60, 100);
 }
 
-// Programming Skills
+/* Programming Skills
 void Sauton() {
 	winchM.move_relative(-2065, -100);
 	pros::delay(3250);
@@ -144,9 +146,9 @@ void Sauton() {
 	arms::chassis::turn(-85, 50);
 	arms::chassis::move(65, 80);
 	arms::chassis::move(50, 80);
-}
+}*/
 
-// Programming Skills 2.0
+/* Programming Skills 2.0
 void Sauton2() {
 	// Fetch blue start MOGO
 	arms::chassis::move(8, 50);
@@ -169,8 +171,8 @@ void Sauton2() {
 	arms::chassis::turn(-90, 50);
 	liftMotors.moveRelative(380, 100);
 	arms::chassis::move(10, 80);
-	arms::chassis::turnAbsolute(0);
-	arms::chassis::move(10);
+	arms::chassis::turn(90, 50);
+	arms::chassis::move(10, 100);
 	// Place yellow MOGO on balance board
 	arms::claw::toggleClaw();
 	// Move back to face yellow middle MOGO
@@ -237,11 +239,10 @@ void Sauton2() {
 	arms::claw::toggleClaw();
 	// Move back to our side
 	arms::chassis::move(-70, 100);
-}
+}*/
 
 // Programming Skills 3.0
 void Sauton3() {
-	arms::odom::init();
 	arms::odom::reset();
 	arms::chassis::resetAngle(180);
 	winchM.move_relative(-2065, -100);
@@ -251,13 +252,13 @@ void Sauton3() {
 	pros::delay(1400);
 	arms::chassis::turn(90, 50);
 	ringTask = pros::Task(ringPID);
-	arms::chassis::move(50);
+	arms::chassis::move(50, 80);
 	pros::Task(ringTask).remove();
 	ringTask = (pros::task_t)NULL;
-	arms::chassis::move(30);
+	arms::chassis::move(30, 80);
 	arms::claw::toggleClaw();
-	arms::chassis::turn(-90);
-	arms::chassis::move(96);
+	arms::chassis::turn(-90, 50);
+	arms::chassis::move(96, 80);
 }
 
 /**
@@ -273,7 +274,6 @@ void Sauton3() {
  */
 void autonomous() {
 	arms::chassis::resetAngle();
-	arms::pid::init();
 
 	// Auton Selector Logic
 	switch (arms::selector::auton) {
@@ -282,10 +282,10 @@ void autonomous() {
 		case -3:
 			break;
 		case -2:
+			arms::chassis::turn(90, 50);
 			break;
 		case -1:
-			arms::chassis::move(65, 80);
-			arms::chassis::moveAsync(10);
+			arms::chassis::move(75, 80);
 			arms::claw::toggleClaw();
 			pros::delay(200);
 			arms::chassis::move(-50, 100);
