@@ -82,7 +82,7 @@ void toggleClaw() {
 
 void puncher() {
 	AWP.set_value(true);
-	pros::delay(200);
+	pros::delay(1000);
 	AWP.set_value(false);
 }
 } // namespace arms::claw
