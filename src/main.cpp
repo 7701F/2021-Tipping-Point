@@ -17,6 +17,8 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+	clawP.set_value(true);
+	AWP.set_value(true);
 	// ARMS & Controller init
 	arms::init();
 
@@ -37,7 +39,7 @@ void initialize() {
 			pros::delay(50);
 			master.print(1, 0, brakestr.str().c_str());
 			pros::delay(50);
-			master.print(2, 0, "Distance: %d", distanceR.get());
+			// master.print(2, 0, "Distance: %d", distanceR.get());
 			// master.print(2, 0, "Gyro: %f\r",
 			// imu_sensor.get_heading());
 			printf("Distance: %d\n", distanceR.get());

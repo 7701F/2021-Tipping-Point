@@ -6,7 +6,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-#include "ARMS/arc.h"
 #include "main.h"
 
 std::int32_t mmToInch() {
@@ -89,33 +88,38 @@ void turnImuPID(int turnToHeading, double power) {
 // Right win point
 void Rauton() {
 	arms::chassis::move(20, 80);
-	arms::claw::toggleClaw();
+	deFenestration::claw::toggleClaw();
 	liftMotors.moveRelative(30, 100);
 	pros::delay(300);
 	arms::chassis::turn(-60, 80);
 	arms::chassis::move(-20, 80);
-	arms::claw::toggleClaw();
+	deFenestration::claw::toggleClaw();
 	pros::delay(30);
 }
 
 // Yellow goal
 void Yauton() {
+	// Move to yellow goal
 	arms::chassis::move(64, 80);
-	arms::claw::toggleClaw();
-	pros::delay(200);
+
+	// Grab goal
+	deFenestration::claw::toggleClaw();
+	// pros::delay(200);
+
+	// Pull it back
 	arms::chassis::move(-50, 100);
-	arms::claw::toggleClaw();
+	deFenestration::claw::toggleClaw();
 }
 
 // Left win point
 void Lauton() {
 	// Score AWP
-	arms::claw::puncher();
+	deFenestration::claw::puncher();
 
 	// Turn to MOGO and pull it
 	arms::chassis::turn(90, 80);
 	arms::chassis::move(5, 50);
-	arms::claw::toggleClaw();
+	deFenestration::claw::toggleClaw();
 	arms::chassis::move(-15, 80);
 	pros::delay(500);
 
@@ -128,7 +132,7 @@ void Lauton() {
 	arms::chassis::move(5, 75);
 
 	// Grab it an pull back
-	arms::claw::toggleClaw();
+	deFenestration::claw::toggleClaw();
 	// pros::delay(300);
 	liftMotors.moveRelative(30, 75);
 	pros::delay(500);
@@ -251,6 +255,7 @@ void Sauton2() {
 
 // Programming Skills 3.0
 void Sauton3() {
+	deFenestration::vision::alignRobot(1);
 	arms::chassis::resetAngle(180);
 	winchM.move_relative(-2065, -100);
 	pros::delay(3250);
@@ -260,10 +265,8 @@ void Sauton3() {
 	arms::chassis::turn(90, 50);
 	ringTask = pros::Task(ringPID);
 	arms::chassis::move(50, 80);
-	// pros::Task(ringTask).remove();
-	// ringTask = (pros::task_t)NULL;
 	arms::chassis::move(30, 80);
-	arms::claw::toggleClaw();
+	deFenestration::claw::toggleClaw();
 	arms::chassis::turn(-90, 50);
 	arms::chassis::move(96, 80);
 }
@@ -280,8 +283,6 @@ void Sauton3() {
  * from where it left off.
  */
 void autonomous() {
-	arms::chassis::resetAngle();
-
 	// Auton Selector Logic
 	switch (arms::selector::auton) {
 		case -4:
@@ -294,9 +295,11 @@ void autonomous() {
 		case -1:
 			// Drive forward to the yellow middle MOGO
 			arms::chassis::move(75, 80);
+
 			// Grab the yellow middle MOGO
-			arms::claw::toggleClaw();
+			deFenestration::claw::toggleClaw();
 			pros::delay(200);
+
 			// Go back
 			arms::chassis::move(-50, 100);
 			break;
@@ -316,6 +319,11 @@ void autonomous() {
 			break;
 		default:
 			break;
+	}
+
+	if (ringTask) {
+		pros::Task(ringTask).remove();
+		ringTask = (pros::task_t)NULL;
 	}
 
 	printf("Successfully ran auton: %d\n", arms::selector::auton);

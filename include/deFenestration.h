@@ -11,7 +11,7 @@
 #define AUTOFUNC_H_
 
 // AUTO LIFT FUNCTIONS
-namespace arms::lift {
+namespace deFenestration::lift {
 int wheelMoving(double sv, double* psv);
 
 bool settled();
@@ -19,15 +19,17 @@ bool settled();
 void waitUntilSettled();
 
 void resetLift();
-} // namespace arms::lift
+} // namespace deFenestration::lift
 
 // AUTO CLAW FUNCTIONS
-namespace arms::claw {
+namespace deFenestration::claw {
 void toggleClaw();
 
 void puncher();
-} // namespace arms::claw
+} // namespace deFenestration::claw
 
-namespace vision {} // namespace vision
+namespace deFenestration::vision {
+int alignRobot(int color);
+} // namespace deFenestration::vision
 
 #endif
