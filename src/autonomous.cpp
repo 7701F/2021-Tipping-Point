@@ -271,6 +271,55 @@ void Sauton3() {
 	arms::chassis::move(96, 80);
 }
 
+void Sauton4() {
+	arms::chassis::move(80, 100);
+
+	arms::chassis::turn(-135, 50);
+	deFenestration::vision::alignRobot(3);
+
+	arms::chassis::move(70, 80);
+
+	arms::chassis::turn(135, 50);
+	deFenestration::vision::alignRobot(3);
+
+	arms::chassis::move(72, 80);
+
+	arms::chassis::turn(-135, 50);
+	deFenestration::vision::alignRobot(3);
+
+	arms::chassis::move(72, 80);
+
+	arms::chassis::turn(135, 50);
+	deFenestration::vision::alignRobot(1);
+
+	arms::chassis::move(80, 80);
+
+	deFenestration::claw::toggleClaw();
+	liftMotors.moveRelative(30, 100);
+	while(!deFenestration::lift::settled()) {
+		pros::delay(10);
+	}
+
+	arms::chassis::move(-50, 80);
+
+	arms::chassis::turn(90, 50);
+
+	arms::chassis::move(30, 60);
+
+	arms::chassis::turn(90, 50);
+	liftMotors.moveRelative(220, 100);
+	while(!deFenestration::lift::settled()) {
+		pros::delay(10);
+	}
+
+	while(mmToInch() > 7) {
+		arms::chassis::move(1, 10);
+	}
+
+	deFenestration::claw::toggleClaw();
+	arms::chassis::move(-20, 80);
+}
+
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
