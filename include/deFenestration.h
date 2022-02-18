@@ -29,6 +29,10 @@ void puncher();
 } // namespace deFenestration::claw
 
 namespace deFenestration::vision {
+/* Align the robot to the goal
+ * color = 1 for blue, 2 for red, 3 for yellow
+ * return 1 if the robot is aligned, 2 if it is not aligned
+ */
 int alignRobot(int color);
 } // namespace deFenestration::vision
 

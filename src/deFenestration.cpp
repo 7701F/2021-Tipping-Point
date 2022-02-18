@@ -107,10 +107,6 @@ void init() {
 }
 
 int alignRobot(int color) {
-	// Align the robot to the goal
-	// color = 1 for blue, 2 for red, 3 for yellow
-	// return 1 if the robot is aligned, 2 if it is not aligned
-
 	if (initialized == false) {
 		init();
 	}
@@ -129,8 +125,10 @@ int alignRobot(int color) {
 		printf("%d", goal.x_middle_coord);
 		if (!aligned) {
 			arms::chassis::turn(1, 100);
+			pros::delay(100);
 		} else if (goal.x_middle_coord < 0) {
 			arms::chassis::turn(-1, 100);
+			pros::delay(100);
 		}
 		if (goal.x_middle_coord == 0) {
 			aligned = true;
