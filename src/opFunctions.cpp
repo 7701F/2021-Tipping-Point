@@ -93,6 +93,7 @@ void ringPID() {
 
 		current = proportion + integral + derivative; // sets value current as total of all terms
 
+		printf("Current: %f\n", current); // prints current value to the console
 		ringM.moveVoltage(current); // sets motors to the calculated value
 
 		pros::delay(20); // waits so we dont hog all our CPU power or cause loop instability
