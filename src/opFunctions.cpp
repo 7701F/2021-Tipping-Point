@@ -104,8 +104,6 @@ bool pistonState = false;
 bool prevPistonState = false;
 bool mogoState = false;
 bool ringState = false;
-enum winchKey { startPos = 0, upPos = 1100, downPos = -2065 };
-int winchState = 1;
 // Combined Claw, Lift, Winch, and Ringlift control function
 void gameSystemControls() {
 	// Lift Controls
@@ -117,13 +115,13 @@ void gameSystemControls() {
 		liftSpeed = 0;
 	}
 
-	if (fabs(liftSpeed) >= 50 && liftMotors.getPosition() > 0) {
+	if (fabs(liftSpeed) >= 50 /*&& liftMotors.getPosition() > 0*/) {
 		liftMotors.moveVelocity(liftSpeed * (double)100 / 127);
 	} else if (liftSpeed == 0) {
 		liftMotors.moveVelocity(0);
-	} else if (liftMotors.getPosition() < 0) {
-		liftMotors.moveAbsolute(11, 10);
-	}
+	} // else if (liftMotors.getPosition() < 0) {
+	  // liftMotors.moveAbsolute(11, 10);
+	// }
 
 	// Claw Controls
 	pistonState = master.get_digital(DIGITAL_R2);
@@ -147,21 +145,12 @@ void gameSystemControls() {
 		}
 	}
 
-	// Winch Automated Control
-	if (master.get_digital(DIGITAL_RIGHT)) {
-		winchState = winchState == 0 ? 2 : winchState == 1 ? 2 : winchState == 2 ? 1 : 0;
-	}
-
-	switch (winchState) {
-		case 1:
-			if (winchM.get_position() == winchKey::downPos) {
-				winchM.move_absolute(winchKey::upPos, 75);
-			}
-		case 2:
-			if (winchM.get_position() == winchKey::startPos) {
-				winchM.move_absolute(winchKey::downPos, 75);
-			} else if (winchM.get_position() == winchKey::upPos) {
-				winchM.move_absolute(winchKey::downPos, 75);
-			}
+	// Winch Control
+	if (master.get_digital(DIGITAL_RIGHT) == 1) {
+		winchM.move_velocity(100);
+	} else if (master.get_digital(DIGITAL_DOWN) == 1) {
+		winchM.move_velocity(-100);
+	} else {
+		winchM.move_velocity(0);
 	}
 }
