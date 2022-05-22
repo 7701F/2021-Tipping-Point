@@ -12,35 +12,43 @@
 #define MOTORS_H_
 
 // Declare controller
-extern pros::Controller master;
+inline pros::Controller master(pros::E_CONTROLLER_MASTER);;
 
 // Declare drive motors
-extern pros::Motor leftMtr;
-extern pros::Motor rightMtr;
-extern pros::Motor leftMtrR;
-extern pros::Motor rightMtrR;
+inline pros::Motor leftMtr(20, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+inline pros::Motor leftMtrR(19, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+inline pros::Motor rightMtr(11, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
+inline pros::Motor rightMtrR(12, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
 
-// Declare lift motors
-extern okapi::MotorGroup liftMotors;
+// Lift Motors
+inline okapi::Motor rightLift(8, true, okapi::AbstractMotor::gearset::red,
+                       okapi::AbstractMotor::encoderUnits::degrees);
+inline okapi::Motor leftLift(9, false, okapi::AbstractMotor::gearset::red,
+                      okapi::AbstractMotor::encoderUnits::degrees);
+inline okapi::MotorGroup liftMotors({rightLift, leftLift});
 
-// Declare grabby motors
-extern okapi::Motor ringM;
+// Ring Motor
+inline okapi::Motor ringM(6, true, okapi::AbstractMotor::gearset::blue, okapi::AbstractMotor::encoderUnits::degrees);
 
-// Declare winch motors
-extern pros::Motor winchM;
+// Winch Motor
+inline pros::Motor winchM(10, MOTOR_GEARSET_36, false, MOTOR_ENCODER_DEGREES);
 
-// Sensors Sensor
-extern pros::Imu imu_sensor;
-extern pros::Distance distanceR;
+// Sensors
+inline pros::Imu imu_sensor(1);
+inline pros::Distance distanceR(21);
 
-// Vision Sensor
-extern pros::Vision vision_sensor;
-extern pros::vision_signature_s_t RED_SIG;
-extern pros::vision_signature_s_t BLU_SIG;
-extern pros::vision_signature_s_t YLW_SIG;
+// Vision
+inline pros::vision_signature_s_t RED_SIG =
+    pros::Vision::signature_from_utility(1, 6255, 7309, 6782, -325, 223, -52, 3.000, 0);
+inline pros::vision_signature_s_t YLW_SIG =
+    pros::Vision::signature_from_utility(2, 351, 1099, 724, -3479, -2631, -3054, 3.000, 0);
+inline pros::vision_signature_s_t BLU_SIG =
+    pros::Vision::signature_from_utility(3, -3073, -2047, -2560, 7899, 12545, 10222, 3.000, 0);
+inline pros::Vision vision_sensor(7, pros::E_VISION_ZERO_CENTER);
 
 // Pneumatics
-extern pros::ADIDigitalOut clawP;
-extern pros::ADIDigitalOut AWP;
+inline pros::ADIDigitalOut clawP('A');
+inline pros::ADIDigitalOut AWP('B');
+
 
 #endif
